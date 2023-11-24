@@ -1,5 +1,5 @@
 # Flood Alert System Technology (FAST)
-- Develop a Flood Alert IoT project using components like water level sensors and ESP8266 NodeMCU. This project detects water levels, triggering alerts when they surpass a specified threshold. The system communicates through Telegram, sending real-time notifications to a dedicated group, enabling swift responses to potential flood situations. With additional features like an optional LCD display and LED indicator, this versatile project offers a practical solution for remote monitoring and timely alerts in flood-prone areas, promoting community safety and resilience.
+Develop a Flood Alert IoT project using components like water level sensors and ESP8266 NodeMCU. This project detects water levels, triggering alerts when they surpass a specified threshold. The system communicates through Telegram, sending real-time notifications to a dedicated group, enabling swift responses to potential flood situations. With additional features like an optional LCD display and LED indicator, this versatile project offers a practical solution for remote monitoring and timely alerts in flood-prone areas, promoting community safety and resilience.
 
 
 ### Problem
