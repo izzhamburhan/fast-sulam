@@ -1,64 +1,78 @@
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
-#include <ESP8266WiFi.h>
-#include <TelegramBot.h>
+/* Change these values based on your calibration values */
+int lowerThreshold = 350;
+int upperThreshold = 400;
 
-const char* ssid = "YourWiFiSSID";
-const char* password = "YourWiFiPassword";
-const char* botToken = "YourTelegramBotToken";
+// Sensor pins
+#define sensorPower 7
+#define sensorPin A0
 
-const int waterLevelPin = D2;
-const int ledPin = D3;
+// Value for storing water level
+int val = 0;
 
-int waterLevelThreshold = 500; // Adjust this value based on your sensor and requirements
-int currentWaterLevel;
-bool alertSent = false;
-
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+// Declare pins to which LEDs are connected
+int redLED = 2;
+int yellowLED = 11;
+int greenLED = 8;
 
 void setup() {
-  Serial.begin(115200);
-  lcd.begin(16, 2);
-  lcd.print("Water Level:");
+	Serial.begin(9600);
+	pinMode(sensorPower, OUTPUT);
+	digitalWrite(sensorPower, LOW);
+	
+	// Set LED pins as an OUTPUT
+	pinMode(redLED, OUTPUT);
+	pinMode(yellowLED, OUTPUT);
+	pinMode(greenLED, OUTPUT);
 
-  pinMode(ledPin, OUTPUT);
-  pinMode(waterLevelPin, INPUT);
-
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(250);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.println("WiFi connected");
-
-  // Initialize Telegram bot
-  TelegramBot.begin(botToken);
+	// Initially turn off all LEDs
+	digitalWrite(redLED, LOW);
+	digitalWrite(yellowLED, LOW);
+	digitalWrite(greenLED, LOW);
 }
 
 void loop() {
-  currentWaterLevel = analogRead(waterLevelPin);
+	int level = readSensor();
 
-  lcd.setCursor(0, 1);
-  lcd.print("   "); // Clear previous water level
-  lcd.setCursor(0, 1);
-  lcd.print(currentWaterLevel);
-
-  if (currentWaterLevel > waterLevelThreshold && !alertSent) {
-    sendAlert();
-    alertSent = true;
-    digitalWrite(ledPin, HIGH); // Turn on the LED as an alert
-  } else if (currentWaterLevel <= waterLevelThreshold) {
-    alertSent = false;
-    digitalWrite(ledPin, LOW); // Turn off the LED
-  }
-
-  delay(1000); // Adjust the delay based on your project requirements
+	if (level == 0) {
+		Serial.println("Water Level: Empty");
+    Serial.print("Water level: ");
+    Serial.println(readSensor());
+		digitalWrite(redLED, LOW);
+		digitalWrite(yellowLED, LOW);
+		digitalWrite(greenLED, LOW);
+	}
+	else if (level > 0 && level <= lowerThreshold) {
+		Serial.println("Water Level: Low");
+		digitalWrite(redLED, HIGH);
+    Serial.print("Water level: ");
+Serial.println(readSensor());
+		digitalWrite(yellowLED, LOW);
+		digitalWrite(greenLED, LOW);
+	}
+	else if (level > lowerThreshold && level <= upperThreshold) {
+		Serial.println("Water Level: Medium");
+    Serial.print("Water level: ");
+    Serial.println(readSensor());
+		digitalWrite(redLED, LOW);
+		digitalWrite(yellowLED, HIGH);
+		digitalWrite(greenLED, LOW);
+	}
+	else if (level > upperThreshold) {
+		Serial.println("Water Level: High");
+    Serial.print("Water level: ");
+    Serial.println(readSensor()); 
+		digitalWrite(redLED, LOW);
+		digitalWrite(yellowLED, LOW);
+		digitalWrite(greenLED, HIGH);
+	}
+	delay(1000);
 }
 
-void sendAlert() {
-  String chatId = "YourTelegramChatID"; // Replace with your chat ID
-  String message = "Flood alert! Water level exceeded the threshold.";
-
-  TelegramBot.sendMessage(chatId, message);
+//This is a function used to get the reading
+int readSensor() {
+	digitalWrite(sensorPower, HIGH);
+	delay(10);
+	val = analogRead(sensorPin);
+	digitalWrite(sensorPower, LOW);
+	return val;
 }
