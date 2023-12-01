@@ -1,6 +1,8 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 /* Change these values based on your calibration values */
-int lowerThreshold = 350;
-int upperThreshold = 400;
+int lowerThreshold = 380;
+int upperThreshold = 450;
 
 // Sensor pins
 #define sensorPower 7
@@ -14,6 +16,8 @@ int redLED = 2;
 int yellowLED = 11;
 int greenLED = 8;
 
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 void setup() {
 	Serial.begin(9600);
 	pinMode(sensorPower, OUTPUT);
@@ -24,6 +28,9 @@ void setup() {
 	pinMode(yellowLED, OUTPUT);
 	pinMode(greenLED, OUTPUT);
 
+// Initialize LCD
+  lcd.begin(16, 2);
+
 	// Initially turn off all LEDs
 	digitalWrite(redLED, LOW);
 	digitalWrite(yellowLED, LOW);
@@ -33,38 +40,54 @@ void setup() {
 void loop() {
 	int level = readSensor();
 
+   lcd.clear();
+  lcd.setCursor(0, 0);
+
 	if (level == 0) {
-		Serial.println("Water Level: Empty");
-    Serial.print("Water level: ");
+		Serial.print("Water Level: Empty ~");
     Serial.println(readSensor());
+
+    lcd.print("Water Level: Empty");
+
 		digitalWrite(redLED, LOW);
 		digitalWrite(yellowLED, LOW);
 		digitalWrite(greenLED, LOW);
 	}
 	else if (level > 0 && level <= lowerThreshold) {
-		Serial.println("Water Level: Low");
+		Serial.print("Water Level: Low ~");
+    Serial.println(readSensor());
+
+    lcd.print("Water Level: Low");
+
 		digitalWrite(redLED, HIGH);
-    Serial.print("Water level: ");
-Serial.println(readSensor());
 		digitalWrite(yellowLED, LOW);
 		digitalWrite(greenLED, LOW);
 	}
 	else if (level > lowerThreshold && level <= upperThreshold) {
-		Serial.println("Water Level: Medium");
-    Serial.print("Water level: ");
+		Serial.print("Water Level: Medium ~");
     Serial.println(readSensor());
+
+    lcd.print("Water Level: Medium");
+
 		digitalWrite(redLED, LOW);
 		digitalWrite(yellowLED, HIGH);
 		digitalWrite(greenLED, LOW);
 	}
 	else if (level > upperThreshold) {
-		Serial.println("Water Level: High");
-    Serial.print("Water level: ");
+		Serial.print("Water Level: High ~");
     Serial.println(readSensor()); 
+
+    lcd.print("Water Level: High");
+
 		digitalWrite(redLED, LOW);
 		digitalWrite(yellowLED, LOW);
 		digitalWrite(greenLED, HIGH);
 	}
+
+  lcd.setCursor(0, 1);
+  lcd.print("Level: ");
+  lcd.print(level);
+
 	delay(1000);
 }
 
