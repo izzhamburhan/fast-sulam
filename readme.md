@@ -12,7 +12,7 @@ The use of FAST in low-lying areas such as Padang Java is highly encouraged in p
 6)    LED (Option)
 
 
-## Instruction
+### Wiring Diagram
 
  LCD (2004A)       Arduino Uno
   - GND   ----->   GND
@@ -38,8 +38,10 @@ The use of FAST in low-lying areas such as Padang Java is highly encouraged in p
   - Cathode ----->   GND (through resistor)
 
 
-### Contributor
-- MUHAMMAD ARIFF IZZHAM BIN BURHANUDDIN (2022755831) - K
+
+
+#### Contributor
+- MUHAMMAD ARIFF IZZHAM BIN BURHANUDDIN (2022755831) - K 
 - NURUL ANIS BINTI MUHAMAD FAUZI (2022923331) 
 - MOHAMAD ADAM MALIK BIN MAT PUA'AT (2022981227)
 - SYED ALI ALHABSHI BIN SYED MOKHDZAR (2022987541)
