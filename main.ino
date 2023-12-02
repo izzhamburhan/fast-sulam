@@ -2,7 +2,7 @@
 #include <LiquidCrystal_I2C.h>
 /* Change these values based on your calibration values */
 int lowerThreshold = 380;
-int upperThreshold = 450;
+int upperThreshold = 430;
 
 // Sensor pins
 #define sensorPower 7
@@ -16,7 +16,10 @@ int redLED = 2;
 int yellowLED = 11;
 int greenLED = 8;
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+// LiquidCrystal_I2C lcd(0x3F, 20, 4);
+// LiquidCrystal_I2C lcd(0x20, 20, 4);
+
 
 void setup() {
 	Serial.begin(9600);
@@ -28,8 +31,8 @@ void setup() {
 	pinMode(yellowLED, OUTPUT);
 	pinMode(greenLED, OUTPUT);
 
-// Initialize LCD
-  lcd.begin(16, 2);
+  lcd.init();
+  lcd.backlight();
 
 	// Initially turn off all LEDs
 	digitalWrite(redLED, LOW);
