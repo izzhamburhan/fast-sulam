@@ -12,7 +12,30 @@ The use of FAST in low-lying areas such as Padang Java is highly encouraged in p
 6)    LED (Option)
 
 
+## Instruction
 
+ LCD (2004A)       Arduino Uno
+  - GND   ----->   GND
+  - VCC   ----->   5V
+  - SDA   ----->   A4 (Analog Pin 4)
+  - SCL   ----->   A5 (Analog Pin 5)
+
+  Water Level Sensor
+  - Signal ----->   A0
+  - VCC   ----->   5V
+  - GND   ----->   GND
+
+  Red LED
+  - Anode ----->   D2
+  - Cathode ----->   GND (through resistor)
+
+  Yellow LED
+  - Anode ----->   D11
+  - Cathode ----->   GND (through resistor)
+
+  Green LED
+  - Anode ----->   D8
+  - Cathode ----->   GND (through resistor)
 
 
 ### Contributor
