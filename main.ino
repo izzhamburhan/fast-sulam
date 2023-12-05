@@ -1,104 +1,110 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
-/* Change these values based on your calibration values */
-int lowerThreshold = 380;
-int upperThreshold = 430;
+#include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
+#include "CTBot.h"
 
-// Sensor pins
-#define sensorPower 7
-#define sensorPin A0
+CTBot myBot;
 
-// Value for storing water level
+const char* ssid = "wifi name";
+const char* pass = "pass";
+const char* token = "6440264298:AAFN8H4Rib74bLDjeVE1xdHMwCIvWNGdr_c";
+const int id = 646666934; //id who you want to receive msg
+
 int val = 0;
 
-// Declare pins to which LEDs are connected
-int redLED = 2;
-int yellowLED = 11;
-int greenLED = 8;
-
-LiquidCrystal_I2C lcd(0x27, 20, 4);
-// LiquidCrystal_I2C lcd(0x3F, 20, 4);
-// LiquidCrystal_I2C lcd(0x20, 20, 4);
-
-
 void setup() {
-	Serial.begin(9600);
-	pinMode(sensorPower, OUTPUT);
-	digitalWrite(sensorPower, LOW);
-	
-	// Set LED pins as an OUTPUT
-	pinMode(redLED, OUTPUT);
-	pinMode(yellowLED, OUTPUT);
-	pinMode(greenLED, OUTPUT);
+  Serial.begin(9600);
+  pinMode(D5, HIGH);  // Blue led Pin Connected To D5 Pin
+  pinMode(D6, HIGH);  // Red Led Pin Connected To D7 Pin
+  pinMode(D7, HIGH);  // Green Led Connected To D6 Pin
 
-  lcd.init();
-  lcd.backlight();
+ 
+  delay(1000);  // Allow time for Serial Monitor to open
 
-	// Initially turn off all LEDs
-	digitalWrite(redLED, LOW);
-	digitalWrite(yellowLED, LOW);
-	digitalWrite(greenLED, LOW);
+  // Connect to WiFi
+  connectToWiFi();
+
+  myBot.wifiConnect(ssid, pass);
+  myBot.setTelegramToken(token);
+  if (myBot.testConnection())
+    Serial.println("Connection to Telegram successful");
+  else
+    Serial.println("Connection to Telegram failed");
+
+
+  Serial.println("Setup complete.");
 }
 
 void loop() {
-	int level = readSensor();
+  // Check if WiFi is connected before proceeding
+  
+  if (WiFi.status() == WL_CONNECTED) {
+    int s1 = analogRead(A0);
+    Serial.println("Water Level Reading: " + String(s1));
 
-   lcd.clear();
-  lcd.setCursor(0, 0);
+        if (s1 > 600 && s1 < 850) {
+          digitalWrite(D6, HIGH);
+          sendMessageToTelegram("Flood Alert! Please get ready.");
+          myBot.sendMessage(id, "Flood Alert! Please get reaadyy.");
+          
+        } else {
+          digitalWrite(D6, LOW);
+        }
 
-	if (level == 0) {
-		Serial.print("Water Level: Empty ~");
-    Serial.println(readSensor());
+        if (s1 < 600) {
+          digitalWrite(D5, HIGH);
+          
+        } else {
+          digitalWrite(D5, LOW);
+        }
 
-    lcd.print("Water Level: Empty");
+        if (s1 > 850) {
+          digitalWrite(D7, HIGH);
+          sendMessageToTelegram("Flood Alert! Water level is high.");
+          myBot.sendMessage(id, "Flood Alert! Water level is high.");
+          delay(10000);  // Delay for 5 seconds to avoid continuous alerts (for testing)
+        } else {
+          digitalWrite(D7, LOW);
+        }
 
-		digitalWrite(redLED, LOW);
-		digitalWrite(yellowLED, LOW);
-		digitalWrite(greenLED, LOW);
-	}
-	else if (level > 0 && level <= lowerThreshold) {
-		Serial.print("Water Level: Low ~");
-    Serial.println(readSensor());
-
-    lcd.print("Water Level: Low");
-
-		digitalWrite(redLED, HIGH);
-		digitalWrite(yellowLED, LOW);
-		digitalWrite(greenLED, LOW);
-	}
-	else if (level > lowerThreshold && level <= upperThreshold) {
-		Serial.print("Water Level: Medium ~");
-    Serial.println(readSensor());
-
-    lcd.print("Water Level: Medium");
-
-		digitalWrite(redLED, LOW);
-		digitalWrite(yellowLED, HIGH);
-		digitalWrite(greenLED, LOW);
-	}
-	else if (level > upperThreshold) {
-		Serial.print("Water Level: High ~");
-    Serial.println(readSensor()); 
-
-    lcd.print("Water Level: High");
-
-		digitalWrite(redLED, LOW);
-		digitalWrite(yellowLED, LOW);
-		digitalWrite(greenLED, HIGH);
-	}
-
-  lcd.setCursor(0, 1);
-  lcd.print("Level: ");
-  lcd.print(level);
-
-	delay(1000);
+  } else {
+    // If WiFi is not connected, attempt to reconnect
+    Serial.println("WiFi not connected. Reconnecting...");
+    connectToWiFi();
+  }
 }
 
-//This is a function used to get the reading
-int readSensor() {
-	digitalWrite(sensorPower, HIGH);
-	delay(10);
-	val = analogRead(sensorPin);
-	digitalWrite(sensorPower, LOW);
-	return val;
+void sendMessageToTelegram(const char* message) {
+  // Check if WiFi is connected before attempting to send a Telegram alert
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Sending message to Telegram...");
+    if (myBot.sendMessage(id, message)) {
+      Serial.println("Message sent successfully");
+    } else {
+      Serial.println("Failed to send message. Check your Telegram setup.");
+    }
+  } else {
+    Serial.println("WiFi not connected. Unable to send Telegram alert.");
+  }
+}
+
+void connectToWiFi() {
+  Serial.println("Connecting to WiFi...");
+  WiFi.begin(ssid, pass);
+
+  int attempt = 0;
+  while (WiFi.status() != WL_CONNECTED && attempt < 30) {
+    delay(1000);
+    Serial.println("Attempting to connect to WiFi...");
+    attempt++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("WiFi connected!");
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("Failed to connect to WiFi. Please check your credentials.");
+  }
 }
