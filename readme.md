@@ -8,8 +8,7 @@ The use of FAST in low-lying areas such as Padang Java is highly encouraged in p
 2)    Jumper Wire 
 3)    Breadboard 
 4)    ESP8266 Node Mcu V2
-5)    LCD Display (Option) 
-6)    LED (Option)
+5)    LED (Option)
 
 
 ### Wiring Diagram
@@ -30,7 +29,6 @@ The use of FAST in low-lying areas such as Padang Java is highly encouraged in p
   Green LED
   - Anode ----->   D5
   - Cathode ----->   GND (through resistor)
-
 
 
 
