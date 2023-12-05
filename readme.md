@@ -14,27 +14,21 @@ The use of FAST in low-lying areas such as Padang Java is highly encouraged in p
 
 ### Wiring Diagram
 
- LCD (2004A)       Arduino Uno
-  - GND   ----->   GND
-  - VCC   ----->   5V
-  - SDA   ----->   A4 (Analog Pin 4)
-  - SCL   ----->   A5 (Analog Pin 5)
-
   Water Level Sensor
   - Signal ----->   A0
-  - VCC   ----->   5V
+  - VCC   ----->   VIN
   - GND   ----->   GND
 
   Red LED
-  - Anode ----->   D2
+  - Anode ----->   D7
   - Cathode ----->   GND (through resistor)
 
   Yellow LED
-  - Anode ----->   D11
+  - Anode ----->   D6
   - Cathode ----->   GND (through resistor)
 
   Green LED
-  - Anode ----->   D8
+  - Anode ----->   D5
   - Cathode ----->   GND (through resistor)
 
 
