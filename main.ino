@@ -1,14 +1,15 @@
+// #include <Wire.h>
+// #include <LiquidCrystal_I2C.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 #include "CTBot.h"
 
 CTBot myBot;
-TBMessage message;
-
-const char* ssid = "iPhone";
-const char* pass = "Izzat2701";
+ // TBMessage message;
+const char* ssid = "nama wifi";
+const char* pass = "nama pass";
 const char* token = "6440264298:AAFN8H4Rib74bLDjeVE1xdHMwCIvWNGdr_c";
-const int id = 687007684;
+const int id = 687007684; //tele izzham
 
 int val = 0;
 
@@ -62,13 +63,14 @@ void loop() {
 
         if (s1 > 700) {
           digitalWrite(D7, HIGH);
-          // sendMessageToTelegram("Flood Alert! Water level is high.");
-          myBot.sendMessage(id, "Flood Alert! Water level is high.");
+          sendMessageToTelegram("Flood Alert! Water level is high.");
+          // myBot.sendMessage(id, "Flood Alert! Water level is high.");
           delay(10000);  // Delay for 5 seconds to avoid continuous alerts (for testing)
         } else {
           digitalWrite(D7, LOW);
         }
 
+    // function paling spoil - looping wifi ntah kenapa
       checkTelegramMessage();
         
 
@@ -98,7 +100,7 @@ void connectToWiFi() {
   WiFi.begin(ssid, pass);
 
   int attempt = 0;
-  while (WiFi.status() != WL_CONNECTED && attempt < 30) {
+  while (WiFi.status() != WL_CONNECTED && attempt < 40) {
     delay(1000);
     Serial.print("Attempt " + String(attempt) + ": ");
     Serial.println("WiFi status: " + String(WiFi.status()));
